@@ -10,33 +10,28 @@ const override: CSSProperties = {
 };
 
 function LoadingBar() {
-
+ 
   const [loading, setLoading] = useState(false); //ロードバー消す用
   const [chocobo, setChocobo] = useState(false); //チョコボ消す用
-  
+  const [loadSC, setLoad] = useState(false); //ロード画面自体消す用
+
   useEffect(() => {
     setLoading(true)
     setChocobo(true)
+    setLoad(true)
     setTimeout(() => {
     setLoading(false)
     setChocobo(false)
-    }, 10000)
+    setLoad(false)
+    }, 5000)
   }, [])
-
-  useEffect(() => {
-    if(loading){
-      setChocobo(true)
-    }else if (!loading){
-      setChocobo(false)
-    }
-  })
 
   return (
   <div className="sweet-loading">
-    <Container>       
-      <Wrapper>   
+    <Container show2={loadSC}>       
+      <Wrapper >   
           <Chocobo show={chocobo}/>  
-        <BarWrapper>
+        <BarWrapper >
           <BarLoader 
               loading={loading} 
               cssOverride={override} 
@@ -54,7 +49,7 @@ function LoadingBar() {
 
 export default LoadingBar
 
-const Container = styled.div`
+const Container = styled.div<{ show2: boolean }>`
   height: 90vh;
   width: 25vw;
   display: flex;
@@ -62,10 +57,18 @@ const Container = styled.div`
   align-items: end;
   margin-left: 70vw;
   background-color: #25262599;
-  
   z-index: 1000;
   border-radius: 100px;
+  border-bottom-right-radius: 30px;
+  border-top-right-radius: 30px;
   z-index: 1;
+
+  ${props => {
+    if(props.show2 === false){
+      return `
+      transform: translateX(100%);`
+    }
+  }} //animation にする
 `
 const Wrapper = styled.div`
  height: 100vh;
@@ -76,63 +79,46 @@ const Wrapper = styled.div`
   align-items: center;
   padding-right: 5%;
   padding-bottom: 10%;
-
 `
 
 const BarWrapper = styled.div`
  position: fixed;
  margin-top: 5%;
 `
-var percentage:string = '0%';
-var percentage2:string = '100%';
 
-const Chocobo = styled.div<{ show: boolean, percentage: string }>`
+const Chocobo = styled.div<{ show: boolean }>`
   ${props => {
     if(props.show === true){
-      return `  height: 80px;
-                width: 350px;  
+      return `  height: 160px;
+                width: 210px;  
               `
     }else if(props.show === false) {
       return `  height: 0px;
                 width: 0px;  `
     }
   }}
-  background: url('/chocobos.png') no-repeat;
-  background-size: contain;
+  background: url('/chocobo2steps.png') no-repeat;
   display: flex;
   position: fixed;
   justify-content: center;
   z-index: 1500;  
-  animation: Chocobo-run infinite 11000ms;
+  animation: ChocoboRun 1s steps(2) infinite, forward 6s linear;
+  
+  @keyframes ChocoboRun {
+  0%{
+    background-position: 0px;
+  }
+  100%{
+    background-position: -420px;
+  }
+}
 
-
-  ${props => {
-    return `
-    @keyframes Chocobo-run {
-      
-    percentage {
-      transform: translateX(0px);
+ @keyframes forward {
+    0%{
+      transform: translateX(-100px);
     }
-    20% {
-      
+    100%{
+      transform:translateX(160px);
     }
-    40% {
-      
-    }
-    50% {
-      
-    }
-    50% {
-      
-    }
-    50% {
-
-    }
-    100% {
-      transform: translateX(270px);
-    }
-    }
-    `
-  }}
-
+ }
 `
